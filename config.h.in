@@ -1,0 +1,2 @@
+#cmakedefine SHIBSP_HAVE_HIREDIS_SSL
+
