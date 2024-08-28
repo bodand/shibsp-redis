@@ -3,12 +3,12 @@
 This storage plugin provides support for storing session information in the [Redis][redis] key-value database.
 The plugin can be configured to use either a single-instance Redis database, or a Redis cluster: see [Configuration](#configuration).
 
-## Packaging (Debian)
+## Building and packaging (Debian)
 
 For building a locally usable Debian package from the repository, perform the following.
 
 Prerequisites: 
-- A Debian system with the `build-essential cmake libshibsp-dev libhiredis-dev` packages installed.
+- A Debian system with the `build-essential cmake libshibsp-dev libhiredis-dev libkrb5-dev pkg-config` packages installed.
 
 Building, from the repository directory:
 
@@ -22,32 +22,6 @@ $ cpack -G DEB
 After this there will be a `shibboleth-sp-redis_<version>_<arch>.deb` file in the `_build` directory, which depends (in theory) on the current `libshibsp-dev` version; this is enforced by depending (in the package) on the `shibboleth-sp-utils` package with the same version.
 This package contains the runtime needed to load the plugin anyways, so the version enforcement just helps matching the versions.
 Whenever a new Shibbolteth SP is released a rebuild of the plugin is needed with the maching `libshibsp-dev` package.
-
-## Building (full)
-
-The plugin uses the [hiredis][hiredis] C library for low-level connection to a Redis database instance, thus this library needs to be available when configuring Shibboleth-SP.
-Any version in 1.x.x should work fully, versions before the stable 1.0.0 release will build, but some configuration parameters will be ignored.
-
-If TLS support is required, hiredis itself needs to be built with TLS support.
-This requires hiredis 1.0.0 or above.
-See their documentation for up-to-date info about how to do that.
-The plugin builds and works without TLS enabled, but a configuration that needs TLS will not work with a storage plugin built without TLS support.
-
-The hiredis distribution contains a pkg-config file, which should be installed when building the library.
-If the library was installed in a path known by pkg-config, nothing else needs to be done.
-Otherwise, the `PKG_CONFIG_PATH` needs to be set to contain the appropriate location for the configure script.
-
-Other than that, the Boost libraries are required: this subproject specifically only requires Boost.Container and Boost.Lambda, but usually the easiest option is to just get all header-only Boost libraries, as they have rather intricate interdependencies which make it easier to just ignore and get the whole package.
-
-When the above preparations are done, configuration of the SP can proceed as usual: to enable Redis support, provide the `--with-redis` flag.
-This will instruct the script to search for hiredis and activate this subproject.
-Nothing is changed in the steps afterward.
-
-For example, if installed hiredis to `/opt/shibboleth-sp` with all other Shibboleth packages, configuration may look like:
-
-```shell
-$ PKG_CONFIG_PATH=/opt/shibbolet-sp/lib/pkgconfig/ ./configure --prefix=/opt/shibbolet-sp/ --with-redis <other-options>
-```
 
 ### Windows
 
